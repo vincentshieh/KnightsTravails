@@ -8,38 +8,9 @@ class PolyTreeNode
     @children = []
   end
 
-  def parent=(parent)
-    @parent.children.delete(self) unless @parent.nil?
-
-    @parent = parent
-    unless @parent.nil? || @parent.children.include?(self)
-      @parent.children << self
-    end
-  end
-
   def add_child(child_node)
     @children << child_node
     child_node.parent = self
-  end
-
-  def remove_child(child)
-    raise "No such child" unless @children.include?(child)
-
-    @children.delete(child)
-    child.parent = nil
-  end
-
-  def dfs(target_value)
-    return self if target_value == @value
-
-    @children.each do |child|
-      child_search = child.dfs(target_value)
-      if child_search
-        return child_search
-      end
-    end
-
-    nil
   end
 
   def bfs(target_value)
@@ -51,6 +22,31 @@ class PolyTreeNode
         node_queue << child
       end
     end
+  end
+
+  def dfs(target_value)
+    return self if target_value == @value
+
+    @children.each do |child|
+      child_search = child.dfs(target_value)
+      return child_search if child_search
+    end
+
+    nil
+  end
+
+  def parent=(parent)
+    @parent.children.delete(self) unless @parent.nil?
+    @parent = parent
+    unless @parent.nil? || @parent.children.include?(self)
+      @parent.children << self
+    end
+  end
+
+  def remove_child(child)
+    raise "No such child" unless @children.include?(child)
+    @children.delete(child)
+    child.parent = nil
   end
 
   def trace_path_back
