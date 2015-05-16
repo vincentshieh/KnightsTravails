@@ -1,4 +1,4 @@
-require './00_tree_node.rb'
+require './tree_node.rb'
 
 class KnightPathFinder
   POSSIBLE_MOVES = [[1, 2], [-1, 2], [1, -2], [-1, -2],
@@ -9,6 +9,16 @@ class KnightPathFinder
     @start_node = PolyTreeNode.new(start)
     @visited_positions = [start]
     build_move_tree
+  end
+
+  def self.valid_moves(pos)
+    valid_moves = POSSIBLE_MOVES.map do |move|
+      [pos[0] + move[0], pos[1] + move[1]]
+    end
+
+    valid_moves.select do |move|
+      on_board?(move)
+    end
   end
 
   def build_move_tree
@@ -30,14 +40,9 @@ class KnightPathFinder
     end
   end
 
-  def self.valid_moves(pos)
-    valid_moves = POSSIBLE_MOVES.map do |move|
-      [pos[0] + move[0], pos[1] + move[1]]
-    end
-
-    valid_moves.select do |move|
-      on_board?(move)
-    end
+  def find_path(end_pos)
+    end_node = @start_node.bfs(end_pos)
+    end_node.trace_path_back
   end
 
   def new_move_positions(pos)
@@ -47,15 +52,10 @@ class KnightPathFinder
     possible_moves
   end
 
-  def find_path(end_pos)
-    end_node = @start_node.bfs(end_pos)
-    end_node.trace_path_back
-  end
-
   private
 
   def self.on_board?(pos)
-    pos[0] <= 7 && pos[0] >= 0 && pos[1] <= 7 && pos[1] >= 0
+    pos[0].between?(0, 7) && pos[1].between?(0, 7)
   end
 end
 
